@@ -318,32 +318,205 @@
 }
 
 /* =========================================
+   ESTILOS DO MODAL (MOBILE PRIMEIRO)
+========================================= */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.hidden {
+  display: none !important;
+}
+
+.modal-conteudo {
+  background: #ffffff;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 450px; /* Largura focada no celular primeiro */
+  max-height: 90vh; 
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; 
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+}
+
+.fechar-modal {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: #ffffff;
+  border: 1px solid #eaeaea;
+  font-size: 1.5rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #333;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: background 0.2s;
+}
+
+.fechar-modal:hover {
+  background: #f9fafb;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto; 
+  height: 100%;
+}
+
+.modal-body img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+}
+
+.modal-detalhes {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1; 
+}
+
+.detalhes-info {
+  flex-grow: 1; 
+}
+
+#modal-titulo {
+  font-size: 1.3rem;
+  color: #111;
+  margin: 0 0 0.5rem;
+  line-height: 1.3;
+  padding-right: 2.5rem;
+}
+
+.modal-preco {
+  font-size: 1.4rem;
+  color: #0f766e;
+  font-weight: 700;
+  margin: 0 0 1rem;
+}
+
+.modal-descricao {
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.modal-tamanhos-wrapper {
+  margin-bottom: 1.5rem;
+}
+
+.label-tamanho {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #111;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.container-tamanhos {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-tamanho {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: #374151;
+  transition: all 0.2s;
+}
+
+.btn-tamanho:hover {
+  border-color: #0f766e;
+}
+
+.btn-tamanho.ativo {
+  background-color: #0f766e;
+  color: #ffffff;
+  border-color: #0f766e;
+}
+
+.modal-acoes {
+  margin-top: auto; 
+  padding-top: 1rem;
+}
+
+.modal-acoes .btn-comprar {
+  width: 100%;
+  padding: 1rem;
+  background-color: #18181b;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* =========================================
    ESTILOS PARA PC / DESKTOP (> 768px)
 ========================================= */
 @media (min-width: 768px) {
+  .modal-conteudo {
+    max-width: 900px; /* Força o modal a ficar bem largo */
+    width: 85vw; /* Ocupa 85% da tela até atingir os 900px */
+    height: 550px; /* Trava a altura para alinhar foto e texto */
+  }
+
   .modal-body {
-    flex-direction: row; /* Coloca imagem e texto lado a lado */
-    overflow: hidden; /* Remove barra de rolagem dupla */
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Exatos 50% para imagem, 50% para detalhes */
+    height: 100%;
+    overflow: hidden; /* Tira o scroll duplo */
   }
 
   .modal-body img {
-    width: 50%;
-    height: auto;
-    min-height: 450px; /* Garante tamanho bonito na foto */
+    width: 100%;
+    height: 100%; /* A foto vai preencher de ponta a ponta sem sobrar branco embaixo */
+    object-fit: cover;
   }
 
   .modal-detalhes {
-    width: 50%;
-    padding: 2.5rem;
-    overflow-y: auto; /* Rolagem apenas no texto, caso seja gigante */
+    padding: 2.5rem 3rem; /* Dá um respiro grande para os textos no PC */
+    height: 100%;
+    overflow-y: auto; /* Se a descrição for longa, rola só o texto, a foto fica parada */
   }
 
   #modal-titulo {
-    font-size: 1.6rem;
+    font-size: 1.8rem;
+    padding-right: 1rem;
   }
 
   .modal-preco {
     font-size: 1.6rem;
+  }
+
+  .modal-acoes .btn-comprar {
+    padding: 1.2rem;
+    font-size: 1.1rem;
   }
 }
 
