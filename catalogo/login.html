@@ -1,0 +1,31 @@
+<!-- login.html -->
+<form id="form-login">
+  <input type="email" id="email" placeholder="E-mail admin" required>
+  <input type="password" id="senha" placeholder="Senha" required>
+  <button type="submit">Entrar no Painel</button>
+</form>
+
+<script>
+  document.getElementById('form-login').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email: document.getElementById('email').value,
+        senha: document.getElementById('senha').value
+      })
+    });
+
+    const dados = await res.json();
+
+    if (res.ok) {
+      // Salva o token de acesso e redireciona para o admin
+      localStorage.setItem('tokenAdmin', dados.token);
+      window.location.href = '/admin.html';
+    } else {
+      alert(dados.mensagem || 'Credenciais inválidas!');
+    }
+  });
+</script>

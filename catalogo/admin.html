@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Painel Administrativo - Produtos</title>
+  <style>
+    body { font-family: sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; color: #18181b; }
+    .card-form { background: #f4f4f5; padding: 1.5rem; border-radius: 12px; margin-bottom: 2rem; }
+    .campo { margin-bottom: 1rem; }
+    .campo label { display: block; font-weight: 600; margin-bottom: 0.4rem; font-size: 0.9rem; }
+    .campo input, .campo textarea { width: 100%; padding: 0.6rem; border: 1px solid #d4d4d8; border-radius: 6px; box-sizing: border-box; }
+    button { background: #18181b; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; cursor: pointer; font-weight: 600; }
+    button:hover { background: #3f3f46; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+    th, td { border-bottom: 1px solid #e4e4e7; padding: 0.75rem; text-align: left; }
+    table img { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; }
+    .btn-deletar { background: #dc2626; padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <h1>Painel de Gerenciamento</h1>
+
+  <div class="card-form">
+    <h2>Cadastrar Novo Produto</h2>
+    <form id="form-cadastro">
+      <div class="campo">
+        <label>Nome do Produto</label>
+        <input type="text" id="nome" required placeholder="Ex: Camiseta Oversized Black">
+      </div>
+      <div class="campo">
+        <label>Preço (R$)</label>
+        <input type="number" id="preco" step="0.01" required placeholder="89.90">
+      </div>
+      <div class="campo">
+        <label>URL da Foto</label>
+        <input type="url" id="foto" required placeholder="https://site.com/imagem.jpg">
+      </div>
+      <div class="campo">
+        <label>Tamanhos (separados por vírgula)</label>
+        <input type="text" id="tamanhos" placeholder="P, M, G, GG">
+      </div>
+      <div class="campo">
+        <label>Descrição</label>
+        <textarea id="descricao" rows="3" placeholder="Algodão 100%, toque macio..."></textarea>
+      </div>
+      <button type="submit">Salvar Produto</button>
+    </form>
+  </div>
+
+  <h2>Produtos no Catálogo</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Foto</th>
+        <th>Nome</th>
+        <th>Preço</th>
+        <th>Tamanhos</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody id="tabela-admin-produtos"></tbody>
+  </table>
+
+  <script src="admin.js"></script>
+</body>
+</html>
