@@ -158,7 +158,9 @@
     .grade{ grid-template-columns: repeat(5, 1fr); }
   }
 
-/* --- ESTILOS BASE E MOBILE --- */
+/* =========================================
+   ESTILOS DO MODAL (MOBILE PRIMEIRO)
+========================================= */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -167,7 +169,7 @@
   align-items: center;
   justify-content: center;
   z-index: 9999;
-  padding: 0.5rem;
+  padding: 1rem;
   backdrop-filter: blur(4px);
 }
 
@@ -179,23 +181,24 @@
   background: #ffffff;
   border-radius: 16px;
   width: 100%;
-  max-height: 90vh;
+  max-width: 850px; /* Largura ideal para PC */
+  max-height: 90vh; /* Limita na tela do celular */
+  position: relative;
   display: flex;
   flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  overflow: hidden; /* Arredonda até a imagem */
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
 }
 
 .fechar-modal {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 15px;
+  right: 15px;
   background: #ffffff;
-  border: none;
-  font-size: 1.4rem;
-  width: 32px;
-  height: 32px;
+  border: 1px solid #eaeaea;
+  font-size: 1.5rem;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   cursor: pointer;
   color: #333;
@@ -203,76 +206,92 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  transition: background 0.2s;
 }
 
-.modal-scroll-area {
-  overflow-y: auto;
-  flex: 1;
+.fechar-modal:hover {
+  background: #f9fafb;
+}
+
+.modal-body {
   display: flex;
   flex-direction: column;
+  overflow-y: auto; /* Rolagem geral no celular */
+  height: 100%;
 }
 
-.modal-scroll-area img {
+.modal-body img {
   width: 100%;
-  height: 200px;
+  height: 280px;
   object-fit: cover;
 }
 
 .modal-detalhes {
-  padding: 1.25rem;
+  padding: 1.5rem;
   display: flex;
   flex-direction: column;
+  flex-grow: 1; /* Preenche o resto do espaço */
+}
+
+.detalhes-info {
+  flex-grow: 1; /* Empurra o botão pro fundo */
 }
 
 #modal-titulo {
-  font-size: 1.25rem;
+  font-size: 1.3rem;
   color: #111;
-  margin: 0 0 0.3rem;
-  line-height: 1.2;
+  margin: 0 0 0.5rem;
+  line-height: 1.3;
+  padding-right: 2.5rem; /* Evita que o texto passe por baixo do 'X' */
 }
 
 .modal-preco {
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   color: #0f766e;
   font-weight: 700;
-  margin: 0 0 0.6rem;
+  margin: 0 0 1rem;
 }
 
 .modal-descricao {
-  font-size: 0.88rem;
-  color: #555;
-  line-height: 1.4;
-  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  color: #4b5563;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
 }
 
 .modal-tamanhos-wrapper {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 .label-tamanho {
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  color: #333;
+  color: #111;
   display: block;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.5rem;
 }
 
 .container-tamanhos {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.5rem;
   flex-wrap: wrap;
 }
 
 .btn-tamanho {
   border: 1px solid #d1d5db;
-  background: #f9fafb;
-  padding: 0.4rem 0.7rem;
-  border-radius: 6px;
+  background: #ffffff;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   color: #374151;
+  transition: all 0.2s;
+}
+
+.btn-tamanho:hover {
+  border-color: #0f766e;
 }
 
 .btn-tamanho.ativo {
@@ -281,60 +300,50 @@
   border-color: #0f766e;
 }
 
-.modal-footer {
-  padding: 0.8rem 1.25rem;
-  background: #ffffff;
-  border-top: 1px solid #eee;
+.modal-acoes {
+  margin-top: auto; /* Trava o botão embaixo */
+  padding-top: 1rem;
 }
 
-.modal-footer .btn-comprar {
+.modal-acoes .btn-comprar {
   width: 100%;
-  padding: 0.85rem;
+  padding: 1rem;
   background-color: #18181b;
   color: #ffffff;
   border: none;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
 }
 
-/* --- EXCLUSIVO PARA DESKTOP / PC (Telas a partir de 641px) --- */
-@media (min-width: 641px) {
-  .modal-conteudo {
-    max-width: 800px; /* Largura expandida para respirar no PC */
+/* =========================================
+   ESTILOS PARA PC / DESKTOP (> 768px)
+========================================= */
+@media (min-width: 768px) {
+  .modal-body {
+    flex-direction: row; /* Coloca imagem e texto lado a lado */
+    overflow: hidden; /* Remove barra de rolagem dupla */
   }
 
-  .modal-scroll-area {
-    display: grid;
-    grid-template-columns: 1.1fr 1fr; /* Dividido em 2 colunas proporcionais */
-    overflow-y: visible;
-  }
-
-  .modal-scroll-area img {
-    height: 100%;
-    min-height: 420px;
-    max-height: 500px;
+  .modal-body img {
+    width: 50%;
+    height: auto;
+    min-height: 450px; /* Garante tamanho bonito na foto */
   }
 
   .modal-detalhes {
-    padding: 2.2rem 2rem;
-    justify-content: space-between;
+    width: 50%;
+    padding: 2.5rem;
+    overflow-y: auto; /* Rolagem apenas no texto, caso seja gigante */
   }
 
   #modal-titulo {
-    font-size: 1.5rem;
+    font-size: 1.6rem;
   }
 
   .modal-preco {
     font-size: 1.6rem;
-  }
-
-  /* No PC, o botão fica dentro da área de detalhes da direita */
-  .modal-footer {
-    padding: 0;
-    border-top: none;
-    margin-top: 1rem;
   }
 }
 
@@ -725,32 +734,34 @@
 </script>
 
 
-<!-- Modal de Detalhes -->
+<!-- Modal de Detalhes FINAL -->
 <div id="modal-produto" class="modal-overlay hidden">
   <div class="modal-conteudo">
     <button class="fechar-modal" onclick="fecharModal()">&times;</button>
     
-    <!-- Área de Conteúdo (Com Scroll no Mobile) -->
-    <div class="modal-scroll-area">
+    <div class="modal-body">
       <img id="modal-img" src="" alt="Produto" />
+      
       <div class="modal-detalhes">
-        <h2 id="modal-titulo"></h2>
-        <p id="modal-preco" class="modal-preco"></p>
-        <p id="modal-descricao" class="modal-descricao"></p>
+        <div class="detalhes-info">
+          <h2 id="modal-titulo"></h2>
+          <p id="modal-preco" class="modal-preco"></p>
+          <p id="modal-descricao" class="modal-descricao"></p>
+          
+          <div class="modal-tamanhos-wrapper">
+            <label class="label-tamanho">Tamanho:</label>
+            <div id="modal-tamanhos" class="container-tamanhos"></div>
+          </div>
+        </div>
         
-        <div class="modal-tamanhos-wrapper">
-          <label class="label-tamanho">Tamanho:</label>
-          <div id="modal-tamanhos" class="container-tamanhos"></div>
+        <div class="modal-acoes">
+          <button type="button" class="btn-comprar" onclick="adicionarASacola()">Adicionar à Sacola</button>
         </div>
       </div>
     </div>
-
-    <!-- Rodapé Fixo com Botão -->
-    <div class="modal-footer">
-      <button type="button" class="btn-comprar" onclick="adicionarASacola()">Adicionar à Sacola</button>
-    </div>
   </div>
 </div>
+
 </div>  
 </div>
 </body>
