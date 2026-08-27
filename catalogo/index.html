@@ -356,6 +356,34 @@
     padding: 1.5rem;
   }
 }
+
+.container-tamanhos {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-tamanho {
+  border: 1px solid #ccc;
+  background: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-tamanho:hover {
+  border-color: #0f766e;
+  color: #0f766e;
+}
+
+.btn-tamanho.ativo {
+  background-color: #0f766e;
+  color: #fff;
+  border-color: #0f766e;
+}
 </style>
 </head>
 <body>
@@ -375,67 +403,145 @@
 <footer>Preços sujeitos a alteração sem aviso prévio.</footer>
 
 <script>
-  // Variável global para guardar os dados
-let listaProdutos = [];
+  // Variáveis globais
+  let listaProdutos = [];
+  let produtoSelecionado = null;
+  let tamanhoSelecionado = null;
 
-async function carregarProdutos() {
-  try {
-    const resposta = await fetch('/api/produtos');
-    listaProdutos = await resposta.json();
+  async function carregarProdutos() {
+    try {
+      const resposta = await fetch('/api/produtos');
+      
+      if (!resposta.ok) {
+        throw new Error(`Erro HTTP: ${resposta.status}`);
+      }
 
-    const grade = document.getElementById('grade');
-    grade.innerHTML = '';
+      listaProdutos = await resposta.json();
 
-    listaProdutos.forEach(produto => {
-      const precoFormatado = Number(produto.preco).toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
+      const grade = document.getElementById('grade');
+      grade.innerHTML = '';
+
+      listaProdutos.forEach(produto => {
+        const precoFormatado = Number(produto.preco).toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+
+        const card = document.createElement('div');
+        card.className = 'produto-card';
+        // Clique no card abre o modal repassando o ID do produto
+        card.onclick = () => abrirModal(produto.id);
+
+        card.innerHTML = `
+          <img src="${produto.foto}" alt="${produto.nome}" loading="lazy" />
+          <div class="produto-info">
+            <h3>${produto.nome}</h3>
+            <p class="preco">${precoFormatado}</p>
+            <button class="btn-comprar" onclick="event.stopPropagation(); abrirModal(${produto.id})">Ver Detalhes</button>
+          </div>
+        `;
+
+        grade.appendChild(card);
       });
-
-      const card = document.createElement('div');
-      card.className = 'produto-card';
-      // Clique no card abre o modal repassando o ID do produto
-      card.onclick = () => abrirModal(produto.id);
-
-      card.innerHTML = `
-        <img src="${produto.foto}" alt="${produto.nome}" />
-        <div class="produto-info">
-          <h3>${produto.nome}</h3>
-          <p class="preco">${precoFormatado}</p>
-          <button class="btn-comprar" onclick="event.stopPropagation(); abrirModal(${produto.id})">Ver Detalhes</button>
-        </div>
-      `;
-
-      grade.appendChild(card);
-    });
-  } catch (erro) {
-    console.error('Erro ao carregar os produtos:', erro);
+    } catch (erro) {
+      console.error('Erro ao carregar os produtos:', erro);
+      const grade = document.getElementById('grade');
+      if (grade) {
+        grade.innerHTML = '<p class="estado-erro">Não foi possível carregar os produtos no momento.</p>';
+      }
+    }
   }
-}
 
-// Funções de Controle do Modal
-function abrirModal(id) {
-  const produto = listaProdutos.find(item => item.id === id);
-  if (!produto) return;
+  // Funções de Controle do Modal
+  function abrirModal(id) {
+    const produto = listaProdutos.find(item => item.id === id);
+    if (!produto) return;
 
-  const precoFormatado = Number(produto.preco).toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL'
+    produtoSelecionado = produto;
+    tamanhoSelecionado = null; // Reseta a seleção anterior
+
+    const precoFormatado = Number(produto.preco).toLocaleString('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    });
+
+    // Atualiza os dados fixos
+    document.getElementById('modal-img').src = produto.foto;
+    document.getElementById('modal-titulo').innerText = produto.nome;
+    document.getElementById('modal-preco').innerText = precoFormatado;
+    
+    // Atualiza a Descrição (vinda do banco)
+    const elDescricao = document.getElementById('modal-descricao');
+    if (elDescricao) {
+      elDescricao.innerText = produto.descricao || 'Sem descrição detalhada disponível para este produto.';
+    }
+
+    // Renderiza os Tamanhos Dinâmicos (vindos do banco)
+    const containerTamanhos = document.getElementById('modal-tamanhos');
+    if (containerTamanhos) {
+      containerTamanhos.innerHTML = '';
+
+      if (produto.tamanhos) {
+        const listaTamanhos = produto.tamanhos.split(',').map(t => t.trim());
+
+        listaTamanhos.forEach(tamanho => {
+          const btnTamanho = document.createElement('button');
+          btnTamanho.type = 'button';
+          btnTamanho.className = 'btn-tamanho';
+          btnTamanho.innerText = tamanho;
+
+          btnTamanho.onclick = () => {
+            document.querySelectorAll('.btn-tamanho').forEach(b => b.classList.remove('ativo'));
+            btnTamanho.classList.add('ativo');
+            tamanhoSelecionado = tamanho;
+          };
+
+          containerTamanhos.appendChild(btnTamanho);
+        });
+      } else {
+        containerTamanhos.innerHTML = '<span style="color: #777; font-size: 0.9rem;">Tamanho único</span>';
+      }
+    }
+
+    // Exibe o modal
+    document.getElementById('modal-produto').classList.remove('hidden');
+  }
+
+  function fecharModal() {
+    document.getElementById('modal-produto').classList.add('hidden');
+    produtoSelecionado = null;
+    tamanhoSelecionado = null;
+  }
+
+  // Função para a ação do botão Adicionar à Sacola
+  function adicionarASacola() {
+    if (!produtoSelecionado) return;
+
+    if (produtoSelecionado.tamanhos && !tamanhoSelecionado) {
+      alert('Por favor, selecione um tamanho antes de adicionar à sacola.');
+      return;
+    }
+
+    alert(`Produto "${produtoSelecionado.nome}" ${tamanhoSelecionado ? `(Tamanho: ${tamanhoSelecionado})` : ''} adicionado com sucesso!`);
+    fecharModal();
+  }
+
+  // Fechar modal ao clicar fora dele ou ao pressionar a tecla ESC
+  window.onclick = function(event) {
+    const modal = document.getElementById('modal-produto');
+    if (event.target === modal) {
+      fecharModal();
+    }
+  };
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      fecharModal();
+    }
   });
 
-  document.getElementById('modal-img').src = produto.foto;
-  document.getElementById('modal-titulo').innerText = produto.nome;
-  document.getElementById('modal-preco').innerText = precoFormatado;
-
-  document.getElementById('modal-produto').classList.remove('hidden');
-}
-
-function fecharModal() {
-  document.getElementById('modal-produto').classList.add('hidden');
-}
-
-// Executa o carregamento
-document.addEventListener('DOMContentLoaded', carregarProdutos);
+  // Executa o carregamento ao abrir a página
+  document.addEventListener('DOMContentLoaded', carregarProdutos);
 </script>
 
 
@@ -449,16 +555,23 @@ document.addEventListener('DOMContentLoaded', carregarProdutos);
       <div class="modal-detalhes">
         <h2 id="modal-titulo"></h2>
         <p id="modal-preco" class="modal-preco"></p>
-        <p class="modal-descricao">
-          Peça confeccionada com tecido de alta qualidade, caimento perfeito e acabamento premium. Ideal para compor looks modernos e versáteis.
-        </p>
         
-        <div class="modal-acoes">
+        <!-- Descrição vinda do banco -->
+        <p id="modal-descricao" class="modal-descricao"></p>
+        
+        <!-- Seleção de Tamanhos do banco -->
+        <div class="modal-tamanhos-wrapper">
+          <label><strong>Tamanhos disponíveis:</strong></label>
+          <div id="modal-tamanhos" class="container-tamanhos"></div>
+        </div>
+        
+        <div class="modal-acoes" style="margin-top: 1.5rem;">
           <button class="btn-comprar" onclick="adicionarASacola()">Adicionar à Sacola</button>
         </div>
       </div>
     </div>
   </div>
+</div>  
 </div>
 </body>
 </html>
