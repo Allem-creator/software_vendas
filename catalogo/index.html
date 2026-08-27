@@ -213,70 +213,48 @@
 <footer>Preços sujeitos a alteração sem aviso prévio.</footer>
 
 <script>
-  // Função para formatar o valor numérico para Moeda (R$)
-  const formatarPreco = (valor) =>
-    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
-
-  // Função que desenha os cards na tela
-  function renderizarGrade(lista) {
-    const grade = document.getElementById('grade');
-    grade.innerHTML = '';
-
-    if (!lista || lista.length === 0) {
-      grade.innerHTML = '<p class="estado-vazio">Nenhum produto disponível no momento.</p>';
-      return;
-    }
-
-    lista.forEach((produto) => {
-      const card = document.createElement('article');
-      card.className = 'produto';
-      card.innerHTML = `
-        <a href="#" aria-label="${produto.nome}, ${formatarPreco(produto.preco)}">
-          <div class="foto-wrap">
-            <div class="skeleton" aria-hidden="true"></div>
-            <img
-              src="${produto.foto}"
-              alt="${produto.nome}"
-              loading="lazy"
-              onload="this.previousElementSibling.remove()"
-              onerror="this.previousElementSibling.remove(); this.replaceWith(Object.assign(document.createElement('div'),{className:'skeleton',style:'animation:none;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);font-size:11px;text-align:center;padding:8px'}))"
-            >
-          </div>
-          <div class="info">
-            <p class="nome">${produto.nome}</p>
-            <div class="preco-row">
-              <span class="preco">${formatarPreco(produto.preco)}</span>
-            </div>
-          </div>
-        </a>
-      `;
-      grade.appendChild(card);
-    });
-  }
-
-  // AQUI ENTRA A SUA NOVA FUNÇÃO:
   async function carregarProdutos() {
+    const grade = document.getElementById('grade');
+
     try {
-      // Chama a API Serverless que busca do Neon/Vercel
-      const resp = await fetch('/catalogo/api/produtos');
-      
-      if (!resp.ok) {
-        throw new Error('Falha ao carregar os dados');
+      // Faz o fetch direto para a API que acabou de responder Status 200
+      const resposta = await fetch('/api/produtos');
+
+      if (!resposta.ok) {
+        throw new Error(`Erro na API: ${resposta.status}`);
       }
 
-      const dados = await resp.json();
-      
-      // Envia os dados recebidos do banco para serem desenhados na página
-      renderizarGrade(dados);
+      const produtos = await resposta.json();
+
+      // Limpa a mensagem "Não foi possível carregar..."
+      grade.innerHTML = '';
+
+      // Monta os cards dos produtos
+      produtos.forEach(produto => {
+        const precoFormatado = Number(produto.preco).toLocaleString('pt-BR', {
+          style: 'currency',
+          currency: 'BRL'
+        });
+
+        const card = document.createElement('div');
+        card.className = 'produto-card'; // Ajuste com a sua classe CSS de card
+        card.innerHTML = `
+          <img src="${produto.foto}" alt="${produto.nome}" style="width: 100%; max-height: 250px; object-fit: cover;" />
+          <h3>${produto.nome}</h3>
+          <p>${precoFormatado}</p>
+        `;
+
+        grade.appendChild(card);
+      });
+
     } catch (erro) {
-      console.error('Erro ao buscar produtos:', erro);
-      document.getElementById('grade').innerHTML = 
-        '<p class="estado-erro">Não foi possível carregar os produtos no momento.</p>';
+      console.error('Erro ao renderizar produtos:', erro);
+      grade.innerHTML = '<p class="estado-erro">Não foi possível carregar os produtos no momento.</p>';
     }
   }
 
-  // Executa a busca assim que a página carrega
-  carregarProdutos();
+  // Executa a busca ao carregar a página
+  document.addEventListener('DOMContentLoaded', carregarProdutos);
 </script>
 
 </body>
