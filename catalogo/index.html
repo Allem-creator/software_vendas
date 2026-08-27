@@ -484,32 +484,33 @@
 /* =========================================
    ESTILOS PARA PC / DESKTOP (> 768px)
 ========================================= */
+/* Correção definitiva para eliminar a borda branca no PC */
 @media (min-width: 768px) {
   .modal-conteudo {
     max-width: 850px;
-    height: auto; /* Deixa a altura flexível de acordo com o conteúdo */
+    width: 90vw;
+    overflow: hidden; /* Garante que os cantos arredondados cortem a imagem */
   }
 
   .modal-body {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    align-items: stretch; /* Garante que a imagem e os detalhes tenham a mesma altura exata */
-    overflow: hidden;
+    align-items: stretch; /* Estica a coluna da imagem até a base do modal */
   }
 
   .modal-body img {
-    height: 100%; /* A foto estica até o fim do modal */
-    min-height: 400px;
+    width: 100%;
+    height: 100%;      /* Força a imagem a preencher toda a altura disponível */
+    min-height: 0;     /* Remove trava de altura do CSS Grid */
+    object-fit: cover; /* Corta os excessos sem distorcer a camiseta */
+    display: block;
   }
 
   .modal-detalhes {
     padding: 2.5rem;
-    justify-content: space-between; /* Espalha o texto para cima e o botão para baixo */
-    overflow-y: auto;
-  }
-
-  #modal-titulo {
-    font-size: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
 }
 
