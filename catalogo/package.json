@@ -1,7 +1,7 @@
 {
-  "name": "financas-html",
+  "name": "vitrine-produtos",
   "version": "1.0.0",
-  "type":"module",
+  "type": "module",
   "dependencies": {
     "@neondatabase/serverless": "^0.10.4"
   }
