@@ -158,84 +158,173 @@
     .grade{ grid-template-columns: repeat(5, 1fr); }
   }
 
-  /* Ajustes Responsivos para Mobile */
+/* Estilos Base do Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.hidden {
+  display: none !important;
+}
+
+.modal-conteudo {
+  background: #ffffff;
+  border-radius: 16px;
+  max-width: 700px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+}
+
+.fechar-modal {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  background: #ffffff;
+  border: none;
+  font-size: 1.8rem;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  color: #333;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.modal-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.modal-body img {
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  max-height: 420px;
+  object-fit: cover;
+}
+
+.modal-detalhes {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#modal-titulo {
+  font-size: 1.3rem;
+  color: #111;
+  margin: 0 0 0.4rem;
+}
+
+.modal-preco {
+  font-size: 1.4rem;
+  color: #0f766e;
+  font-weight: 700;
+  margin: 0 0 0.8rem;
+}
+
+.modal-descricao {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.4;
+  margin-bottom: 1rem;
+}
+
+/* Tamanhos */
+.modal-tamanhos-wrapper {
+  margin-bottom: 1.25rem;
+}
+
+.label-tamanho {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #333;
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.container-tamanhos {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-tamanho {
+  border: 1px solid #d1d5db;
+  background: #f9fafb;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: #374151;
+  transition: all 0.2s ease;
+}
+
+.btn-tamanho:hover {
+  border-color: #0f766e;
+  color: #0f766e;
+}
+
+.btn-tamanho.ativo {
+  background-color: #0f766e;
+  color: #ffffff;
+  border-color: #0f766e;
+}
+
+/* Botão Adicionar à Sacola */
+.modal-acoes .btn-comprar {
+  width: 100%;
+  padding: 0.85rem;
+  background-color: #18181b;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Ajustes Específicos para Celular (Mobile) */
 @media (max-width: 640px) {
-  /* Centraliza e ajusta o padding do overlay */
   .modal-overlay {
-    padding: 1rem;
-    align-items: flex-end; /* Abre tipo "Bottom Sheet" em telas pequenas */
+    align-items: flex-end;
+    padding: 0;
   }
 
-  /* Ajusta o container do modal */
   .modal-conteudo {
-    width: 100%;
-    max-height: 85vh; /* Evita que o modal saia da tela */
-    border-radius: 20px 20px 0 0; /* Bordas arredondadas no topo */
-    overflow-y: auto; /* Permite rolagem se o conteúdo for longo */
+    border-radius: 20px 20px 0 0;
+    max-height: 88vh;
+    overflow-y: auto;
   }
 
-  /* Transforma o layout em 1 coluna vertical */
   .modal-body {
     grid-template-columns: 1fr;
-    gap: 0;
   }
 
-  /* Ajusta a altura da imagem no celular */
   .modal-body img {
-    height: 240px;
-    max-height: 240px;
+    height: 220px;
+    min-height: 220px;
   }
 
-  /* Ajusta os espaçamentos internos */
   .modal-detalhes {
     padding: 1.25rem;
   }
-
-  /* Títulos e preços levemente menores para não quebrar linha */
-  #modal-titulo {
-    font-size: 1.25rem;
-  }
-
-  .modal-preco {
-    font-size: 1.3rem;
-    margin: 0.25rem 0 0.75rem;
-  }
-
-  /* Botão de fechar mais fácil de tocar */
-  .fechar-modal {
-    top: 10px;
-    right: 15px;
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 50%;
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    line-height: 1;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  }
-
-  /* Botões de tamanho em bloco adaptável */
-  .container-tamanhos {
-    gap: 0.4rem;
-  }
-
-  .btn-tamanho {
-    flex: 1;
-    min-width: 45px;
-    padding: 0.6rem 0.5rem;
-    text-align: center;
-  }
-
-  /* Botão principal fixo ao toque */
-  .btn-comprar {
-    padding: 0.9rem;
-    font-size: 1rem;
-  }
 }
-
   .produto{
     background: var(--surface);
     border-radius: var(--radius);
@@ -624,6 +713,7 @@
 
 
 <!-- Modal de Detalhes -->
+<!-- Modal de Detalhes -->
 <div id="modal-produto" class="modal-overlay hidden">
   <div class="modal-conteudo">
     <button class="fechar-modal" onclick="fecharModal()">&times;</button>
@@ -633,22 +723,22 @@
       <div class="modal-detalhes">
         <h2 id="modal-titulo"></h2>
         <p id="modal-preco" class="modal-preco"></p>
-        
-        <!-- Descrição vinda do banco -->
         <p id="modal-descricao" class="modal-descricao"></p>
         
-        <!-- Seleção de Tamanhos do banco -->
+        <!-- Área de Seleção de Tamanhos -->
         <div class="modal-tamanhos-wrapper">
-          <label><strong>Tamanhos disponíveis:</strong></label>
+          <label class="label-tamanho">Tamanho:</label>
           <div id="modal-tamanhos" class="container-tamanhos"></div>
         </div>
         
-        <div class="modal-acoes" style="margin-top: 1.5rem;">
-          <button class="btn-comprar" onclick="adicionarASacola()">Adicionar à Sacola</button>
+        <!-- Botão de Ação -->
+        <div class="modal-acoes">
+          <button type="button" class="btn-comprar" onclick="adicionarASacola()">Adicionar à Sacola</button>
         </div>
       </div>
     </div>
   </div>
+</div>
 </div>  
 </div>
 </body>
