@@ -271,6 +271,91 @@
     position:absolute; width:1px; height:1px; padding:0; margin:-1px;
     overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
   }
+
+  /* Fundo escuro transparente */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+/* Caixa central do Modal */
+.modal-conteudo {
+  background: #ffffff;
+  border-radius: 16px;
+  max-width: 700px;
+  width: 90%;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+}
+
+.fechar-modal {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666;
+  z-index: 10;
+}
+
+/* Layout interno em 2 colunas */
+.modal-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.modal-body img {
+  width: 100%;
+  height: 100%;
+  max-height: 380px;
+  object-fit: cover;
+}
+
+.modal-detalhes {
+  padding: 2rem 2rem 2rem 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-preco {
+  font-size: 1.5rem;
+  color: #0f766e;
+  font-weight: 700;
+  margin: 0.5rem 0 1rem;
+}
+
+.modal-descricao {
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 600px) {
+  .modal-body {
+    grid-template-columns: 1fr;
+  }
+  .modal-detalhes {
+    padding: 1.5rem;
+  }
+}
 </style>
 </head>
 <body>
@@ -290,24 +375,18 @@
 <footer>Preços sujeitos a alteração sem aviso prévio.</footer>
 
 <script>
-  async function carregarProdutos() {
+  // Variável global para guardar os dados
+let listaProdutos = [];
+
+async function carregarProdutos() {
+  try {
+    const resposta = await fetch('/api/produtos');
+    listaProdutos = await resposta.json();
+
     const grade = document.getElementById('grade');
+    grade.innerHTML = '';
 
-    try {
-      // Faz o fetch direto para a API que acabou de responder Status 200
-      const resposta = await fetch('/api/produtos');
-
-      if (!resposta.ok) {
-        throw new Error(`Erro na API: ${resposta.status}`);
-      }
-
-      const produtos = await resposta.json();
-
-      // Limpa a mensagem "Não foi possível carregar..."
-      grade.innerHTML = '';
-
-      // Monta os cards dos produtos
-      produtos.forEach(produto => {
+    listaProdutos.forEach(produto => {
       const precoFormatado = Number(produto.preco).toLocaleString('pt-BR', {
         style: 'currency',
         currency: 'BRL'
@@ -315,27 +394,71 @@
 
       const card = document.createElement('div');
       card.className = 'produto-card';
+      // Clique no card abre o modal repassando o ID do produto
+      card.onclick = () => abrirModal(produto.id);
+
       card.innerHTML = `
-        <img src="${produto.foto}" alt="${produto.nome}" loading="lazy" />
+        <img src="${produto.foto}" alt="${produto.nome}" />
         <div class="produto-info">
           <h3>${produto.nome}</h3>
           <p class="preco">${precoFormatado}</p>
-        <button class="btn-comprar">Adicionar à Sacola</button>
-      </div>
-    `;
+          <button class="btn-comprar" onclick="event.stopPropagation(); abrirModal(${produto.id})">Ver Detalhes</button>
+        </div>
+      `;
 
-    grade.appendChild(card);
+      grade.appendChild(card);
+    });
+  } catch (erro) {
+    console.error('Erro ao carregar os produtos:', erro);
+  }
+}
+
+// Funções de Controle do Modal
+function abrirModal(id) {
+  const produto = listaProdutos.find(item => item.id === id);
+  if (!produto) return;
+
+  const precoFormatado = Number(produto.preco).toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL'
   });
 
-    } catch (erro) {
-      console.error('Erro ao renderizar produtos:', erro);
-      grade.innerHTML = '<p class="estado-erro">Não foi possível carregar os produtos no momento.</p>';
-    }
-  }
+  document.getElementById('modal-img').src = produto.foto;
+  document.getElementById('modal-titulo').innerText = produto.nome;
+  document.getElementById('modal-preco').innerText = precoFormatado;
 
-  // Executa a busca ao carregar a página
-  document.addEventListener('DOMContentLoaded', carregarProdutos);
+  document.getElementById('modal-produto').classList.remove('hidden');
+}
+
+function fecharModal() {
+  document.getElementById('modal-produto').classList.add('hidden');
+}
+
+// Executa o carregamento
+document.addEventListener('DOMContentLoaded', carregarProdutos);
 </script>
 
+
+<!-- Modal de Detalhes -->
+<div id="modal-produto" class="modal-overlay hidden">
+  <div class="modal-conteudo">
+    <button class="fechar-modal" onclick="fecharModal()">&times;</button>
+    
+    <div class="modal-body">
+      <img id="modal-img" src="" alt="Produto" />
+      <div class="modal-detalhes">
+        <h2 id="modal-titulo"></h2>
+        <p id="modal-preco" class="modal-preco"></p>
+        <p class="modal-descricao">
+          Peça confeccionada com tecido de alta qualidade, caimento perfeito e acabamento premium. Ideal para compor looks modernos e versáteis.
+        </p>
+        
+        <div class="modal-acoes">
+          <button class="btn-comprar" onclick="adicionarASacola()">Adicionar à Sacola</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </body>
 </html>
