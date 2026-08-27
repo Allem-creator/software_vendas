@@ -1,32 +1,3 @@
-// Adicione no topo do admin.js
-const token = localStorage.getItem('tokenAdmin');
-
-if (!token) {
-  // Se não estiver logado, redireciona para a tela de login
-  window.location.href = '/login.html';
-}
-
-// Em todas as requisições (POST, DELETE), envie o token no Header:
-async function deletarProduto(id) {
-  if (!confirm('Tem certeza?')) return;
-
-  const res = await fetch(`/api/produtos/${id}`, {
-    method: 'DELETE',
-    headers: {
-      'Authorization': `Bearer ${token}` // Envia o token para validação
-    }
-  });
-
-  if (res.status === 401 || res.status === 403) {
-    alert('Sessão expirada. Faça login novamente.');
-    localStorage.removeItem('tokenAdmin');
-    window.location.href = '/login.html';
-    return;
-  }
-
-  carregarProdutosAdmin();
-}
-
 document.addEventListener('DOMContentLoaded', () => {
   carregarProdutosAdmin();
 
@@ -48,15 +19,23 @@ document.addEventListener('DOMContentLoaded', () => {
         body: JSON.stringify(novoProduto)
       });
 
+      if (res.status === 401) {
+        alert('Sessão expirada. Faça login novamente.');
+        window.location.href = '/login.html';
+        return;
+      }
+
       if (res.ok) {
         alert('Produto cadastrado com sucesso!');
         document.getElementById('form-cadastro').reset();
         carregarProdutosAdmin();
       } else {
-        alert('Erro ao salvar o produto no servidor.');
+        const dados = await res.json().catch(() => ({}));
+        alert(dados.erro || 'Erro ao salvar o produto no servidor.');
       }
     } catch (erro) {
       console.error('Erro de conexão:', erro);
+      alert('Erro de conexão com o servidor.');
     }
   });
 });
@@ -89,6 +68,13 @@ async function deletarProduto(id) {
 
   try {
     const res = await fetch(`/api/produtos/${id}`, { method: 'DELETE' });
+
+    if (res.status === 401) {
+      alert('Sessão expirada. Faça login novamente.');
+      window.location.href = '/login.html';
+      return;
+    }
+
     if (res.ok) {
       carregarProdutosAdmin();
     } else {
@@ -97,4 +83,9 @@ async function deletarProduto(id) {
   } catch (erro) {
     console.error('Erro ao deletar:', erro);
   }
+}
+
+async function sair() {
+  await fetch('/api/logout', { method: 'POST' });
+  window.location.href = '/login.html';
 }

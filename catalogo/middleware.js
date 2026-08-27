@@ -1,5 +1,5 @@
 export const config = {
-  matcher: ['/admin.html', '/api/produtos/:path*'],
+  matcher: ['/admin.html', '/api/produtos', '/api/produtos/:path*'],
 };
 
 async function verificarToken(token, secret) {
@@ -34,7 +34,7 @@ async function verificarToken(token, secret) {
 export default async function middleware(request) {
   const url = new URL(request.url);
 
-  // Permite acesso público para consultar produtos no catálogo
+  // Permite acesso público para consultar produtos no catálogo (GET)
   if (url.pathname.startsWith('/api/produtos') && request.method === 'GET') {
     return new Response(null, { headers: { 'x-middleware-next': '1' } });
   }
@@ -49,11 +49,11 @@ export default async function middleware(request) {
   const valido = await verificarToken(token, secret);
 
   if (valido) {
-    // Permite prosseguir para /admin.html
+    // Permite prosseguir (admin.html, POST/DELETE de /api/produtos)
     return new Response(null, { headers: { 'x-middleware-next': '1' } });
   }
 
-  // Redireciona se não estiver validado
+  // Não autenticado
   if (url.pathname.startsWith('/api/')) {
     return new Response(JSON.stringify({ mensagem: 'Não autorizado' }), {
       status: 401,
