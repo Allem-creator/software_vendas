@@ -318,12 +318,12 @@
 }
 
 /* =========================================
-   ESTILOS DO MODAL (MOBILE PRIMEIRO)
+   ESTILOS GERAIS E MOBILE
 ========================================= */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -340,13 +340,13 @@
   background: #ffffff;
   border-radius: 16px;
   width: 100%;
-  max-width: 450px; /* Largura focada no celular primeiro */
-  max-height: 90vh; 
+  max-width: 450px;
+  max-height: 90vh;
   position: relative;
   display: flex;
   flex-direction: column;
-  overflow: hidden; 
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4);
 }
 
 .fechar-modal {
@@ -376,25 +376,25 @@
 .modal-body {
   display: flex;
   flex-direction: column;
-  overflow-y: auto; 
-  height: 100%;
+  overflow-y: auto;
 }
 
 .modal-body img {
   width: 100%;
-  height: 300px;
+  height: 320px;
   object-fit: cover;
+  display: block;
 }
 
 .modal-detalhes {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  flex-grow: 1; 
+  flex-grow: 1;
 }
 
 .detalhes-info {
-  flex-grow: 1; 
+  flex-grow: 1;
 }
 
 #modal-titulo {
@@ -460,7 +460,7 @@
 }
 
 .modal-acoes {
-  margin-top: auto; 
+  margin-top: auto;
   padding-top: 1rem;
 }
 
@@ -474,6 +474,11 @@
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
+  transition: background 0.2s;
+}
+
+.modal-acoes .btn-comprar:hover {
+  background-color: #3f3f46;
 }
 
 /* =========================================
@@ -481,42 +486,30 @@
 ========================================= */
 @media (min-width: 768px) {
   .modal-conteudo {
-    max-width: 900px; /* Força o modal a ficar bem largo */
-    width: 85vw; /* Ocupa 85% da tela até atingir os 900px */
-    height: 550px; /* Trava a altura para alinhar foto e texto */
+    max-width: 850px;
+    height: auto; /* Deixa a altura flexível de acordo com o conteúdo */
   }
 
   .modal-body {
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Exatos 50% para imagem, 50% para detalhes */
-    height: 100%;
-    overflow: hidden; /* Tira o scroll duplo */
+    grid-template-columns: 1fr 1fr;
+    align-items: stretch; /* Garante que a imagem e os detalhes tenham a mesma altura exata */
+    overflow: hidden;
   }
 
   .modal-body img {
-    width: 100%;
-    height: 100%; /* A foto vai preencher de ponta a ponta sem sobrar branco embaixo */
-    object-fit: cover;
+    height: 100%; /* A foto estica até o fim do modal */
+    min-height: 400px;
   }
 
   .modal-detalhes {
-    padding: 2.5rem 3rem; /* Dá um respiro grande para os textos no PC */
-    height: 100%;
-    overflow-y: auto; /* Se a descrição for longa, rola só o texto, a foto fica parada */
+    padding: 2.5rem;
+    justify-content: space-between; /* Espalha o texto para cima e o botão para baixo */
+    overflow-y: auto;
   }
 
   #modal-titulo {
-    font-size: 1.8rem;
-    padding-right: 1rem;
-  }
-
-  .modal-preco {
     font-size: 1.6rem;
-  }
-
-  .modal-acoes .btn-comprar {
-    padding: 1.2rem;
-    font-size: 1.1rem;
   }
 }
 
