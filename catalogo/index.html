@@ -213,31 +213,16 @@
 <footer>Preços sujeitos a alteração sem aviso prévio.</footer>
 
 <script>
-  /*
-    Em produção, este array viria de uma chamada assíncrona, por exemplo:
-      const resp = await fetch('/api/produtos');   // API que consulta o PostgreSQL
-      const produtos = await resp.json();
-    Aqui os dados são mockados localmente para montar o layout da grade.
-  */
-  const produtos = [
-    { id: 1, nome: 'Camiseta Branca Básica',        preco: 79.90,  foto: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=70&auto=format' },
-    { id: 2, nome: 'Calça Jeans Reta',               preco: 189.90, foto: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500&q=70&auto=format' },
-    { id: 3, nome: 'Jaqueta Jeans Oversized',        preco: 249.00, foto: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&q=70&auto=format' },
-    { id: 4, nome: 'Vestido Midi Floral',            preco: 219.90, foto: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&q=70&auto=format' },
-    { id: 5, nome: 'Moletom Canguru Cinza',          preco: 159.90, foto: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=70&auto=format' },
-    { id: 6, nome: 'Blazer Alfaiataria Preto',       preco: 329.00, foto: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&q=70&auto=format' },
-    { id: 7, nome: 'Saia Plissada Bege',             preco: 139.90, foto: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=500&q=70&auto=format' },
-    { id: 8, nome: 'Camisa Social Listrada',         preco: 169.90, foto: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500&q=70&auto=format' },
-  ];
-
+  // Função para formatar o valor numérico para Moeda (R$)
   const formatarPreco = (valor) =>
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
 
-  function renderizarGrade(lista){
+  // Função que desenha os cards na tela
+  function renderizarGrade(lista) {
     const grade = document.getElementById('grade');
     grade.innerHTML = '';
 
-    if (!lista || lista.length === 0){
+    if (!lista || lista.length === 0) {
       grade.innerHTML = '<p class="estado-vazio">Nenhum produto disponível no momento.</p>';
       return;
     }
@@ -269,7 +254,29 @@
     });
   }
 
-  renderizarGrade(produtos);
+  // AQUI ENTRA A SUA NOVA FUNÇÃO:
+  async function carregarProdutos() {
+    try {
+      // Chama a API Serverless que busca do Neon/Vercel
+      const resp = await fetch('/api/produtos');
+      
+      if (!resp.ok) {
+        throw new Error('Falha ao carregar os dados');
+      }
+
+      const dados = await resp.json();
+      
+      // Envia os dados recebidos do banco para serem desenhados na página
+      renderizarGrade(dados);
+    } catch (erro) {
+      console.error('Erro ao buscar produtos:', erro);
+      document.getElementById('grade').innerHTML = 
+        '<p class="estado-erro">Não foi possível carregar os produtos no momento.</p>';
+    }
+  }
+
+  // Executa a busca assim que a página carrega
+  carregarProdutos();
 </script>
 
 </body>
