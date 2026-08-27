@@ -1,37 +1,27 @@
-// api/login.js
-export default async function handler(req, res) {
+import crypto from 'crypto';
+
+export default function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ mensagem: 'Método não permitido' });
   }
 
-  const { email, senha } = req.body;
+  const { email, senha } = req.body || {};
 
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@sualoja.com';
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
   const AUTH_SECRET = process.env.AUTH_SECRET || 'sua-chave-secreta-super-segura';
 
   if (email === ADMIN_EMAIL && senha === ADMIN_PASSWORD) {
-    const expStr = (Date.now() + 24 * 60 * 60 * 1000).toString();
+    const exp = Date.now() + 24 * 60 * 60 * 1000;
+    
+    // Assinatura usando o pacote nativo 'crypto' do Node.js
+    const hmac = crypto.createHmac('sha256', AUTH_SECRET).update(exp.toString()).digest('hex');
+    const token = `${exp}.${hmac}`;
 
-    const encoder = new TextEncoder();
-    const chave = await crypto.subtle.importKey(
-      'raw',
-      encoder.encode(AUTH_SECRET),
-      { name: 'HMAC', hash: 'SHA-256' },
-      false,
-      ['sign']
-    );
-    const buffer = await crypto.subtle.sign('HMAC', chave, encoder.encode(expStr));
-    const assinatura = Array.from(new Uint8Array(buffer))
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('');
-
-    const token = `${expStr}.${assinatura}`;
-
-    // Adicionado 'Secure;' para aceitar cookies no HTTPS da Vercel
+    // Configura o Cookie de Sessão
     res.setHeader(
       'Set-Cookie',
-      `session=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`
+      `session=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`
     );
 
     return res.status(200).json({ ok: true });

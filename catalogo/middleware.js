@@ -1,16 +1,11 @@
-// middleware.js
 export const config = {
-  matcher: [
-    '/admin.html',
-    '/api/produtos/:path*'
-  ],
+  matcher: ['/admin.html', '/api/produtos/:path*'],
 };
 
 async function verificarToken(token, secret) {
-  if (!token || !secret) return false;
-  const partes = token.split('.');
-  if (partes.length !== 2) return false;
-  const [expStr, assinatura] = partes;
+  if (!token) return false;
+  const [expStr, assinatura] = token.split('.');
+  if (!expStr || !assinatura) return false;
 
   const exp = parseInt(expStr, 10);
   if (isNaN(exp) || Date.now() > exp) return false;
@@ -23,8 +18,8 @@ async function verificarToken(token, secret) {
     false,
     ['sign']
   );
-  const bufferAssinatura = await crypto.subtle.sign('HMAC', chave, encoder.encode(expStr));
-  const assinaturaCalculada = Array.from(new Uint8Array(bufferAssinatura))
+  const buffer = await crypto.subtle.sign('HMAC', chave, encoder.encode(expStr));
+  const assinaturaCalculada = Array.from(new Uint8Array(buffer))
     .map((b) => b.toString(16).padStart(2, '0'))
     .join('');
 
@@ -33,17 +28,17 @@ async function verificarToken(token, secret) {
 
 export default async function middleware(request) {
   const url = new URL(request.url);
-  const metodo = request.method;
 
-  if (url.pathname.startsWith('/api/produtos') && metodo === 'GET') {
+  // Permite GET público para ver produtos na loja
+  if (url.pathname.startsWith('/api/produtos') && request.method === 'GET') {
     return;
   }
 
-  // Adicionado fallback idêntico ao login.js
   const secret = process.env.AUTH_SECRET || 'sua-chave-secreta-super-segura';
-  const cookieHeader = request.headers.get('cookie') || '';
-  const match = cookieHeader.match(/session=([^;]+)/);
-  const token = match ? decodeURIComponent(match[1]) : null;
+
+  // Leitura nativa de Cookies da Vercel Edge
+  const cookieObj = request.cookies.get('session');
+  const token = typeof cookieObj === 'object' ? cookieObj?.value : cookieObj;
 
   const valido = await verificarToken(token, secret);
 
@@ -51,11 +46,10 @@ export default async function middleware(request) {
     if (url.pathname.startsWith('/api/')) {
       return new Response(JSON.stringify({ mensagem: 'Não autorizado' }), {
         status: 401,
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
       });
     }
 
-    const loginUrl = new URL('/login.html', request.url);
-    return Response.redirect(loginUrl, 302);
+    return Response.redirect(new URL('/login.html', request.url), 302);
   }
 }

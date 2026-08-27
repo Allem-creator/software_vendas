@@ -1,31 +1,58 @@
-<!-- login.html -->
-<form id="form-login">
-  <input type="email" id="email" placeholder="E-mail admin" required>
-  <input type="password" id="senha" placeholder="Senha" required>
-  <button type="submit">Entrar no Painel</button>
-</form>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Login Administrativo</title>
+  <style>
+    body { font-family: sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; background: #f4f4f5; }
+    .box { background: white; padding: 2rem; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 350px; }
+    h2 { margin-top: 0; }
+    input { width: 100%; padding: 0.75rem; margin: 0.5rem 0 1rem; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+    button { width: 100%; padding: 0.75rem; background: #18181b; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; }
+    .erro { color: red; font-size: 0.85rem; margin-top: 0.5rem; display: none; }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h2>Painel Admin</h2>
+    <form id="form-login">
+      <label>E-mail</label>
+      <input type="email" id="email" required placeholder="admin@sualoja.com">
+      <label>Senha</label>
+      <input type="password" id="senha" required placeholder="••••••••">
+      <button type="submit">Entrar</button>
+      <p id="msg-erro" class="erro"></p>
+    </form>
+  </div>
 
-<script>
-  document.getElementById('form-login').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        email: document.getElementById('email').value,
-        senha: document.getElementById('senha').value
-      })
+  <script>
+    document.getElementById('form-login').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const msgErro = document.getElementById('msg-erro');
+      msgErro.style.display = 'none';
+
+      try {
+        const res = await fetch('/api/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: document.getElementById('email').value,
+            senha: document.getElementById('senha').value
+          })
+        });
+
+        if (res.ok) {
+          window.location.href = '/admin.html';
+        } else {
+          const dados = await res.json();
+          msgErro.innerText = dados.mensagem || 'Credenciais inválidas!';
+          msgErro.style.display = 'block';
+        }
+      } catch (err) {
+        msgErro.innerText = 'Erro de conexão com o servidor.';
+        msgErro.style.display = 'block';
+      }
     });
-
-    const dados = await res.json();
-
-    if (res.ok) {
-      // Salva o token de acesso e redireciona para o admin
-      localStorage.setItem('tokenAdmin', dados.token);
-      window.location.href = '/admin.html';
-    } else {
-      alert(dados.mensagem || 'Credenciais inválidas!');
-    }
-  });
-</script>
+  </script>
+</body>
+</html>
