@@ -158,11 +158,11 @@
     .grade{ grid-template-columns: repeat(5, 1fr); }
   }
 
-/* Estilos Principais do Modal com Rolagem Mobile */
+  /* Container Escuro de Fundo */
 .modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0, 0, 0, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -175,73 +175,77 @@
   display: none !important;
 }
 
+/* Caixa Principal do Modal */
 .modal-conteudo {
   background: #ffffff;
   border-radius: 16px;
-  max-width: 650px;
+  max-width: 600px;
   width: 100%;
-  max-height: 90vh; /* Limita a altura a 90% da tela */
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
   position: relative;
-  overflow-y: auto; /* Permite rolar se o conteúdo passar da altura */
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
 .fechar-modal {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 10px;
+  right: 10px;
   background: #ffffff;
   border: none;
-  font-size: 1.5rem;
-  width: 36px;
-  height: 36px;
+  font-size: 1.4rem;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   cursor: pointer;
   color: #333;
-  z-index: 10;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-.modal-body {
+/* Área Interna com Rolagem Própria */
+.modal-scroll-area {
+  overflow-y: auto;
+  flex: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
 }
 
-.modal-body img {
+.modal-scroll-area img {
   width: 100%;
   height: 100%;
-  min-height: 250px;
-  max-height: 380px;
+  min-height: 220px;
+  max-height: 350px;
   object-fit: cover;
 }
 
 .modal-detalhes {
-  padding: 1.5rem;
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
 }
 
 #modal-titulo {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   color: #111;
-  margin: 0 0 0.4rem;
-  line-height: 1.3;
+  margin: 0 0 0.3rem;
+  line-height: 1.2;
 }
 
 .modal-preco {
-  font-size: 1.35rem;
+  font-size: 1.3rem;
   color: #0f766e;
   font-weight: 700;
-  margin: 0 0 0.8rem;
+  margin: 0 0 0.6rem;
 }
 
 .modal-descricao {
-  font-size: 0.88rem;
+  font-size: 0.85rem;
   color: #555;
   line-height: 1.4;
   margin-bottom: 1rem;
@@ -249,31 +253,31 @@
 
 /* Tamanhos */
 .modal-tamanhos-wrapper {
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .label-tamanho {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #333;
   display: block;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.3rem;
 }
 
 .container-tamanhos {
   display: flex;
-  gap: 0.5rem;
+  gap: 0.4rem;
   flex-wrap: wrap;
 }
 
 .btn-tamanho {
   border: 1px solid #d1d5db;
   background: #f9fafb;
-  padding: 0.45rem 0.75rem;
+  padding: 0.4rem 0.7rem;
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: #374151;
 }
 
@@ -283,43 +287,45 @@
   border-color: #0f766e;
 }
 
-/* Botão de Ação */
-.modal-acoes {
-  margin-top: auto;
-  padding-top: 0.5rem;
+/* Rodapé Fixo */
+.modal-footer {
+  padding: 0.8rem 1.25rem;
+  background: #ffffff;
+  border-top: 1px solid #eee;
 }
 
-.modal-acoes .btn-comprar {
+.modal-footer .btn-comprar {
   width: 100%;
-  padding: 0.85rem;
+  padding: 0.8rem;
   background-color: #18181b;
   color: #ffffff;
   border: none;
   border-radius: 8px;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
 }
 
-/* Correções específicas para Telas Menores (Celular) */
+/* Adaptações para Celular (Mobile) */
 @media (max-width: 640px) {
   .modal-overlay {
-    padding: 0.75rem;
+    padding: 0.5rem;
   }
 
-  .modal-body {
-    grid-template-columns: 1fr; /* Vira 1 coluna */
+  .modal-scroll-area {
+    grid-template-columns: 1fr; /* Coluna única no celular */
   }
 
-  .modal-body img {
-    height: 180px; /* Reduz a altura da foto no mobile */
-    min-height: 180px;
+  .modal-scroll-area img {
+    height: 160px; /* Reduz foto no mobile para dar espaço ao texto */
+    min-height: 160px;
   }
 
   .modal-detalhes {
-    padding: 1.25rem;
+    padding: 1rem;
   }
 }
+
   .produto{
     background: var(--surface);
     border-radius: var(--radius);
@@ -708,29 +714,28 @@
 
 
 <!-- Modal de Detalhes -->
-<!-- Modal de Detalhes -->
 <div id="modal-produto" class="modal-overlay hidden">
   <div class="modal-conteudo">
     <button class="fechar-modal" onclick="fecharModal()">&times;</button>
     
-    <div class="modal-body">
+    <!-- Área de Conteúdo (Com Scroll no Mobile) -->
+    <div class="modal-scroll-area">
       <img id="modal-img" src="" alt="Produto" />
       <div class="modal-detalhes">
         <h2 id="modal-titulo"></h2>
         <p id="modal-preco" class="modal-preco"></p>
         <p id="modal-descricao" class="modal-descricao"></p>
         
-        <!-- Área de Seleção de Tamanhos -->
         <div class="modal-tamanhos-wrapper">
           <label class="label-tamanho">Tamanho:</label>
           <div id="modal-tamanhos" class="container-tamanhos"></div>
         </div>
-        
-        <!-- Botão de Ação -->
-        <div class="modal-acoes">
-          <button type="button" class="btn-comprar" onclick="adicionarASacola()">Adicionar à Sacola</button>
-        </div>
       </div>
+    </div>
+
+    <!-- Rodapé Fixo com Botão -->
+    <div class="modal-footer">
+      <button type="button" class="btn-comprar" onclick="adicionarASacola()">Adicionar à Sacola</button>
     </div>
   </div>
 </div>
