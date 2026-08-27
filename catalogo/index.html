@@ -7,6 +7,83 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+
+  /* Container principal dos produtos */
+#grade {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1.5rem;
+}
+
+/* Card individual do produto */
+.produto-card {
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #f0f0f0;
+}
+
+.produto-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Imagem do produto */
+.produto-card img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  border-bottom: 1px solid #f5f5f5;
+}
+
+/* Conteúdo interno do card */
+.produto-info {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.produto-card h3 {
+  font-size: 1.1rem;
+  color: #1a1a1a;
+  margin: 0 0 0.5rem 0;
+  font-weight: 600;
+}
+
+.produto-card .preco {
+  font-size: 1.25rem;
+  color: #0f766e; /* Cor elegante para destaques/preço */
+  font-weight: 700;
+  margin: 0 0 1rem 0;
+}
+
+/* Botão de compra/sacola */
+.btn-comprar {
+  margin-top: auto;
+  width: 100%;
+  padding: 0.75rem;
+  background-color: #18181b;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-comprar:hover {
+  background-color: #3f3f46;
+}
+
+
   :root{
     --bg: #F2F0EB;
     --surface: #FFFFFF;
@@ -231,21 +308,24 @@
 
       // Monta os cards dos produtos
       produtos.forEach(produto => {
-        const precoFormatado = Number(produto.preco).toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL'
-        });
-
-        const card = document.createElement('div');
-        card.className = 'produto-card'; // Ajuste com a sua classe CSS de card
-        card.innerHTML = `
-          <img src="${produto.foto}" alt="${produto.nome}" style="width: 100%; max-height: 250px; object-fit: cover;" />
-          <h3>${produto.nome}</h3>
-          <p>${precoFormatado}</p>
-        `;
-
-        grade.appendChild(card);
+      const precoFormatado = Number(produto.preco).toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
       });
+
+      const card = document.createElement('div');
+      card.className = 'produto-card';
+      card.innerHTML = `
+        <img src="${produto.foto}" alt="${produto.nome}" loading="lazy" />
+        <div class="produto-info">
+          <h3>${produto.nome}</h3>
+          <p class="preco">${precoFormatado}</p>
+        <button class="btn-comprar">Adicionar à Sacola</button>
+      </div>
+    `;
+
+    grade.appendChild(card);
+  });
 
     } catch (erro) {
       console.error('Erro ao renderizar produtos:', erro);
