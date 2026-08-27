@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vitrine — Grade de Produtos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #F2F0EB;
+    --surface: #FFFFFF;
+    --ink: #14151A;
+    --ink-soft: #6B6A66;
+    --line: #E4E1D9;
+    --accent: #1F5C4D;      /* verde verdigris — cor de assinatura */
+    --accent-soft: #E4EEEA;
+    --tag: #C97A3D;         /* laranja queimado do "furo da etiqueta" */
+    --radius: 2px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Work Sans', sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  header{
+    padding: 28px 16px 18px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  header .eyebrow{
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
+
+  header h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: clamp(28px, 6vw, 40px);
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  header p{
+    margin: 8px 0 0;
+    color: var(--ink-soft);
+    font-size: 14px;
+    max-width: 46ch;
+  }
+
+  main{
+    padding: 20px 16px 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  /* GRADE — mobile first: 2 colunas */
+  .grade{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 12px;
+  }
+
+  @media (min-width: 560px){
+    .grade{ grid-template-columns: repeat(3, 1fr); gap: 18px 16px; }
+  }
+  @media (min-width: 860px){
+    .grade{ grid-template-columns: repeat(4, 1fr); gap: 22px 20px; }
+  }
+  @media (min-width: 1140px){
+    .grade{ grid-template-columns: repeat(5, 1fr); }
+  }
+
+  .produto{
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .produto:hover,
+  .produto:focus-within{
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(20,21,26,0.10);
+  }
+
+  .produto a{
+    color: inherit;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+
+  .foto-wrap{
+    position: relative;
+    aspect-ratio: 3 / 4;
+    background: var(--accent-soft);
+    overflow: hidden;
+  }
+
+  .foto-wrap img{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.4s ease;
+  }
+
+  .produto:hover .foto-wrap img{ transform: scale(1.04); }
+
+  .foto-wrap .skeleton{
+    position:absolute; inset:0;
+    background: linear-gradient(100deg, var(--accent-soft) 30%, #f6f3ee 50%, var(--accent-soft) 70%);
+    background-size: 200% 100%;
+    animation: shimmer 1.3s infinite;
+  }
+  @keyframes shimmer{ from{ background-position: 200% 0; } to{ background-position: -200% 0; } }
+
+  .info{
+    padding: 10px 4px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .nome{
+    font-size: 13.5px;
+    font-weight: 500;
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .preco-row{
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding-top: 4px;
+  }
+
+  /* etiqueta de preço — o elemento de assinatura, remete a uma etiqueta de roupa */
+  .preco{
+    position: relative;
+    font-weight: 700;
+    font-size: 14.5px;
+    color: var(--ink);
+    padding-left: 14px;
+  }
+
+  .preco::before{
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 2px solid var(--tag);
+    background: var(--surface);
+  }
+
+  .estado-vazio, .estado-erro{
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 40px 16px;
+    color: var(--ink-soft);
+    font-size: 14px;
+  }
+
+  footer{
+    text-align: center;
+    padding: 20px;
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  .sr-only{
+    position:absolute; width:1px; height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">Catálogo</p>
+  <h1>Novidades da semana</h1>
+  <p>Toque em uma peça para ver detalhes, tamanhos e disponibilidade.</p>
+</header>
+
+<main>
+  <div class="grade" id="grade" aria-live="polite">
+    <!-- os cards são inseridos aqui via JS -->
+  </div>
+</main>
+
+<footer>Preços sujeitos a alteração sem aviso prévio.</footer>
+
+<script>
+  /*
+    Em produção, este array viria de uma chamada assíncrona, por exemplo:
+      const resp = await fetch('/api/produtos');   // API que consulta o PostgreSQL
+      const produtos = await resp.json();
+    Aqui os dados são mockados localmente para montar o layout da grade.
+  */
+  const produtos = [
+    { id: 1, nome: 'Camiseta Branca Básica',        preco: 79.90,  foto: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=70&auto=format' },
+    { id: 2, nome: 'Calça Jeans Reta',               preco: 189.90, foto: 'https://images.unsplash.com/photo-1541099649105-f69ad21f3246?w=500&q=70&auto=format' },
+    { id: 3, nome: 'Jaqueta Jeans Oversized',        preco: 249.00, foto: 'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=500&q=70&auto=format' },
+    { id: 4, nome: 'Vestido Midi Floral',            preco: 219.90, foto: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&q=70&auto=format' },
+    { id: 5, nome: 'Moletom Canguru Cinza',          preco: 159.90, foto: 'https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=70&auto=format' },
+    { id: 6, nome: 'Blazer Alfaiataria Preto',       preco: 329.00, foto: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&q=70&auto=format' },
+    { id: 7, nome: 'Saia Plissada Bege',             preco: 139.90, foto: 'https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?w=500&q=70&auto=format' },
+    { id: 8, nome: 'Camisa Social Listrada',         preco: 169.90, foto: 'https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?w=500&q=70&auto=format' },
+  ];
+
+  const formatarPreco = (valor) =>
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+
+  function renderizarGrade(lista){
+    const grade = document.getElementById('grade');
+    grade.innerHTML = '';
+
+    if (!lista || lista.length === 0){
+      grade.innerHTML = '<p class="estado-vazio">Nenhum produto disponível no momento.</p>';
+      return;
+    }
+
+    lista.forEach((produto) => {
+      const card = document.createElement('article');
+      card.className = 'produto';
+      card.innerHTML = `
+        <a href="#" aria-label="${produto.nome}, ${formatarPreco(produto.preco)}">
+          <div class="foto-wrap">
+            <div class="skeleton" aria-hidden="true"></div>
+            <img
+              src="${produto.foto}"
+              alt="${produto.nome}"
+              loading="lazy"
+              onload="this.previousElementSibling.remove()"
+              onerror="this.previousElementSibling.remove(); this.replaceWith(Object.assign(document.createElement('div'),{className:'skeleton',style:'animation:none;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);font-size:11px;text-align:center;padding:8px'}))"
+            >
+          </div>
+          <div class="info">
+            <p class="nome">${produto.nome}</p>
+            <div class="preco-row">
+              <span class="preco">${formatarPreco(produto.preco)}</span>
+            </div>
+          </div>
+        </a>
+      `;
+      grade.appendChild(card);
+    });
+  }
+
+  renderizarGrade(produtos);
+</script>
+
+</body>
+</html>
