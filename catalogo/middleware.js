@@ -1,9 +1,8 @@
-// Middleware da Vercel: intercepta requisições antes de carregar a página
+// middleware.js
 export const config = {
-  // Define quais rotas devem passar pela validação do admin
   matcher: [
     '/admin.html',
-    '/api/produtos/:path*' // Se quiser proteger mutating endpoints na API
+    '/api/produtos/:path*'
   ],
 };
 
@@ -36,12 +35,12 @@ export default async function middleware(request) {
   const url = new URL(request.url);
   const metodo = request.method;
 
-  // Permite que clientes façam GET para listar os produtos normalmente no catálogo
   if (url.pathname.startsWith('/api/produtos') && metodo === 'GET') {
     return;
   }
 
-  const secret = process.env.AUTH_SECRET;
+  // Adicionado fallback idêntico ao login.js
+  const secret = process.env.AUTH_SECRET || 'sua-chave-secreta-super-segura';
   const cookieHeader = request.headers.get('cookie') || '';
   const match = cookieHeader.match(/session=([^;]+)/);
   const token = match ? decodeURIComponent(match[1]) : null;
@@ -49,7 +48,6 @@ export default async function middleware(request) {
   const valido = await verificarToken(token, secret);
 
   if (!valido) {
-    // Se for uma chamada de API (POST/DELETE), retorna erro 401 JSON em vez de redirecionar página
     if (url.pathname.startsWith('/api/')) {
       return new Response(JSON.stringify({ mensagem: 'Não autorizado' }), {
         status: 401,
@@ -57,7 +55,6 @@ export default async function middleware(request) {
       });
     }
 
-    // Se estiver tentando acessar o admin.html sem login, redireciona para o login
     const loginUrl = new URL('/login.html', request.url);
     return Response.redirect(loginUrl, 302);
   }

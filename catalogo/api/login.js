@@ -1,4 +1,4 @@
-// Arquivo: api/login.js
+// api/login.js
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ mensagem: 'Método não permitido' });
@@ -6,16 +6,13 @@ export default async function handler(req, res) {
 
   const { email, senha } = req.body;
 
-  // Credenciais salvas nas Variáveis de Ambiente da Vercel (ou valores padrão)
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@sualoja.com';
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
   const AUTH_SECRET = process.env.AUTH_SECRET || 'sua-chave-secreta-super-segura';
 
   if (email === ADMIN_EMAIL && senha === ADMIN_PASSWORD) {
-    // Validade de 24 horas
     const expStr = (Date.now() + 24 * 60 * 60 * 1000).toString();
 
-    // Gera a assinatura HMAC compatível com o middleware
     const encoder = new TextEncoder();
     const chave = await crypto.subtle.importKey(
       'raw',
@@ -31,10 +28,10 @@ export default async function handler(req, res) {
 
     const token = `${expStr}.${assinatura}`;
 
-    // Grava o Cookie de Sessão no navegador
+    // Adicionado 'Secure;' para aceitar cookies no HTTPS da Vercel
     res.setHeader(
       'Set-Cookie',
-      `session=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=86400`
+      `session=${encodeURIComponent(token)}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=86400`
     );
 
     return res.status(200).json({ ok: true });
