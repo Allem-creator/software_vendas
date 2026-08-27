@@ -759,7 +759,7 @@
 <footer>Preços sujeitos a alteração sem aviso prévio.</footer>
 
 <script>
-  // Variáveis globais
+  // Variáveis globais de estado
   let listaProdutos = [];
   let produtoSelecionado = null;
   let tamanhoSelecionado = null;
@@ -775,6 +775,7 @@
       listaProdutos = await resposta.json();
 
       const grade = document.getElementById('grade');
+      if (!grade) return;
       grade.innerHTML = '';
 
       listaProdutos.forEach(produto => {
@@ -785,7 +786,6 @@
 
         const card = document.createElement('div');
         card.className = 'produto-card';
-        // Clique no card abre o modal repassando o ID do produto
         card.onclick = () => abrirModal(produto.id);
 
         card.innerHTML = `
@@ -813,26 +813,27 @@
     const produto = listaProdutos.find(item => item.id === id);
     if (!produto) return;
 
+    // Reseta o estado para o novo produto
     produtoSelecionado = produto;
-    tamanhoSelecionado = null; // Reseta a seleção anterior
+    tamanhoSelecionado = null;
 
     const precoFormatado = Number(produto.preco).toLocaleString('pt-BR', {
       style: 'currency',
       currency: 'BRL'
     });
 
-    // Atualiza os dados fixos
+    // Atualiza elementos fixos
     document.getElementById('modal-img').src = produto.foto;
     document.getElementById('modal-titulo').innerText = produto.nome;
     document.getElementById('modal-preco').innerText = precoFormatado;
     
-    // Atualiza a Descrição (vinda do banco)
+    // Atualiza Descrição
     const elDescricao = document.getElementById('modal-descricao');
     if (elDescricao) {
       elDescricao.innerText = produto.descricao || 'Sem descrição detalhada disponível para este produto.';
     }
 
-    // Renderiza os Tamanhos Dinâmicos (vindos do banco)
+    // Renderiza Botões de Tamanhos
     const containerTamanhos = document.getElementById('modal-tamanhos');
     if (containerTamanhos) {
       containerTamanhos.innerHTML = '';
@@ -849,7 +850,7 @@
           btnTamanho.onclick = () => {
             document.querySelectorAll('.btn-tamanho').forEach(b => b.classList.remove('ativo'));
             btnTamanho.classList.add('ativo');
-            tamanhoSelecionado = tamanho;
+            tamanhoSelecionado = tamanho; // Atualiza o estado
           };
 
           containerTamanhos.appendChild(btnTamanho);
@@ -869,20 +870,48 @@
     tamanhoSelecionado = null;
   }
 
-  // Função para a ação do botão Adicionar à Sacola
+  // Adicionar à Sacola com LocalStorage
   function adicionarASacola() {
     if (!produtoSelecionado) return;
 
+    // Validação de seleção de tamanho
     if (produtoSelecionado.tamanhos && !tamanhoSelecionado) {
       alert('Por favor, selecione um tamanho antes de adicionar à sacola.');
       return;
     }
 
-    alert(`Produto "${produtoSelecionado.nome}" ${tamanhoSelecionado ? `(Tamanho: ${tamanhoSelecionado})` : ''} adicionado com sucesso!`);
+    // Estrutura do item
+    const itemSacola = {
+      id: produtoSelecionado.id,
+      nome: produtoSelecionado.nome,
+      preco: produtoSelecionado.preco,
+      foto: produtoSelecionado.foto,
+      tamanho: tamanhoSelecionado || 'Único',
+      quantidade: 1
+    };
+
+    // Recupera a sacola existente do localStorage
+    const sacola = JSON.parse(localStorage.getItem('sacola') || '[]');
+
+    // Verifica se já existe o mesmo produto com o mesmo tamanho
+    const indexExistente = sacola.findIndex(
+      item => item.id === itemSacola.id && item.tamanho === itemSacola.tamanho
+    );
+
+    if (indexExistente > -1) {
+      sacola[indexExistente].quantidade += 1;
+    } else {
+      sacola.push(itemSacola);
+    }
+
+    // Salva a lista atualizada
+    localStorage.setItem('sacola', JSON.stringify(sacola));
+
+    alert(`"${itemSacola.nome}" ${tamanhoSelecionado ? `(Tamanho: ${tamanhoSelecionado})` : ''} foi adicionado à sacola!`);
     fecharModal();
   }
 
-  // Fechar modal ao clicar fora dele ou ao pressionar a tecla ESC
+  // Fechar ao clicar no overlay ou pressionar ESC
   window.onclick = function(event) {
     const modal = document.getElementById('modal-produto');
     if (event.target === modal) {
@@ -896,7 +925,7 @@
     }
   });
 
-  // Executa o carregamento ao abrir a página
+  // Inicialização
   document.addEventListener('DOMContentLoaded', carregarProdutos);
 </script>
 
