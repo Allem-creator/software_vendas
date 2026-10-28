@@ -4,7 +4,7 @@ Sistema de catálogo online com painel administrativo, criado para uma loja de r
 
 🔗 **Demo:** https://software-vendas.vercel.app/
 
-<img width="2430" height="1385" alt="image" src="https://github.com/user-attachments/assets/f8fa1aaa-1736-4158-bfde-4ccb59b47e7c" />
+<img width="2520" height="1377" alt="image" src="https://github.com/user-attachments/assets/b9c0cdab-3484-431e-8a8c-82323bd420a1" />
 
 
 ## ✨ Funcionalidades
@@ -108,6 +108,9 @@ Configure em **Vercel > Settings > Environment Variables**:
 - Finalização de pedido (checkout)
 - Upload de imagens em vez de URL
 - Categorias e busca na vitrine
+- Adicionamento de produtos ao carrinho com seleção de quantidade e tamanho na vitrine.
+- Armazenamento local do carrinho via `localStorage` para persistência rápida dos itens escolhidos.
+- Fluxo de finalização de pedido integrado com o backend (PostgreSQL) para registro automático de vendas.
 
 ## 👤 Autor
 
